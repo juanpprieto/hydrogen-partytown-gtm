@@ -1,6 +1,16 @@
-# Hydrogen template: Hello World
+# Hydrogen template: Hello World + Partytown + GTM
 
-Hydrogen is Shopify’s stack for headless commerce. Hydrogen is designed to dovetail with [Remix](https://remix.run/), Shopify’s full stack web framework. This template contains a **minimal setup** of components, queries and tooling to get started with Hydrogen.
+Hydrogen is Shopify’s stack for headless commerce. Hydrogen is designed to
+dovetail with [Remix](https://remix.run/), Shopify’s full stack web framework.
+This template contains a **minimal setup** of components, queries and tooling to
+get started with Hydrogen.
+
+[Partytown](https://partytown.builder.io/) - Run Third-Party Scripts From A Web
+Worker
+
+[GTM](https://tagmanager.google.com/) - Google Analytics lets you measure your
+advertising ROI as well as track your Flash, video, and social networking sites
+and applications
 
 [Check out Hydrogen docs](https://shopify.dev/custom-storefronts/hydrogen)
 [Get familiar with Remix](https://remix.run/docs/en/v1)
