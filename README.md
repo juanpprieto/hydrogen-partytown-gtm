@@ -17,6 +17,8 @@ and applications
 
 ## What's included
 
+- Partytown
+- GTM
 - Remix
 - Hydrogen
 - Oxygen
@@ -28,14 +30,6 @@ and applications
 - Minimal setup of components and routes
 
 ## Getting started
-
-**Requirements:**
-
-- Node.js version 16.14.0 or higher
-
-```bash
-npm create @shopify/hydrogen@latest --template hello-world
-```
 
 Remember to update `.env` with your shop's domain and Storefront API token!
 
@@ -49,4 +43,61 @@ npm run build
 
 ```bash
 npm run dev
+```
+
+## Partytown reverse proxy route
+
+When the `<script>` element is appended to the `<head>` using this traditional
+approach, the script’s HTTP response does not require Cross-Origin Resource
+Sharing (CORS) headers.
+
+However, because Partytown requests the scripts within a web worker using
+fetch(), then the script’s response requires the correct CORS headers.
+
+Many third-party scripts already provide the correct CORS headers, but not all
+do. For services that do not add the correct headers, then a reverse proxy to
+another domain must be used in order to provide the CORS headers.
+
+This example includes an internal reverse proxy route (cloudflare-friendly)
+[`app/routes/reverse-proxy`](https://github.com/juanpprieto/hydrogen-partytown-gtm/blob/main/app/routes/reverse-proxy.tsx)
+to help provide correct CORS headers for those library that require them.
+
+To enable proxying configure `<Partytown />` as such:
+
+```tsx
+// app/root.tsx
+<Partytown
+  debug={true}
+  forward={['dataLayer.push', 'gtag']}
+  resolveUrl={maybeProxyRequest}
+/>
+```
+
+where `maybeProxyRequest` is a helper utility:
+
+```tsx
+/**
+ * Partytown will call this function to resolve any URLs
+ * Certain libraries like googletagmanager require a reverse proxy to handle CORS
+ * @param url - the URL to resolve
+ * @param location - the current location
+ * @param type - the type of request (script, image, etc)
+ * @returns URL or proxy URL
+ * @see https://partytown.builder.io/proxying-requests
+ */
+function maybeProxyRequest(url: URL, location: Location, type: string) {
+  if (type !== 'script') {
+    return url;
+  }
+
+  // If the url is already reverse proxied, don't proxy it again
+  if (url.href.includes('/reverse-proxy')) {
+    return url;
+  }
+
+  // Otherwise, proxy the url
+  const proxyUrl = new URL(`${location.origin}/reverse-proxy`);
+  proxyUrl.searchParams.append('apiUrl', url.href);
+  return proxyUrl;
+}
 ```
